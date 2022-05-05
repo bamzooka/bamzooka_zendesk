@@ -44,7 +44,7 @@
         "build": {
           "builder": "ngx-build-plus:browser",
           "options": {
-            "outputPath": "dist/workspace-view",
+            "outputPath": "public/workspace-view",
             "index": "projects/workspace-view/src/index.html",
             "main": "projects/workspace-view/src/main.ts",
             "polyfills": "projects/workspace-view/src/polyfills.ts",

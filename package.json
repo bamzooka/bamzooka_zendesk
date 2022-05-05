@@ -1,13 +1,22 @@
 {
-  "name": "bamzooka-zendesk",
+  "name": "bamzooka_zendesk",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "yarn start-workspace-view",
+    "build": "yarn build-workspace-view",
+    "extract-i18n": "yarn extract-i18n-connectors && yarn extract-i18n-workspace-view",
+    "extract-i18n-workspace-view": "ng extract-i18n --project=workspace-view --output-path=public/locales --format=json --out-file workspace-view.json",
+    "start-workspace-view": "ng build workspace-view --watch --output-hashing none --single-bundle true --output-path=public/workspace-view",
+    "build-workspace-view": "ng build workspace-view --prod --localize --output-hashing none --single-bundle true --output-path=public/workspace-view",
     "test": "ng test"
   },
+  "views": [
+    {
+      "name": "workspace",
+      "customElementName": "bamzooka-zendesk-workspace-view"
+    }
+  ],
   "private": true,
   "dependencies": {
     "@angular/animations": "~13.3.0",
@@ -19,6 +28,8 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "@bamzooka/ui-kit": "^0.0.69",
+    "@ng-bootstrap/ng-bootstrap": "11.0.1",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "ngx-build-plus": "13.0.1",
     "rxjs": "~7.5.0",

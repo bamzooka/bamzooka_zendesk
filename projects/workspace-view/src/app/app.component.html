@@ -1,0 +1,128 @@
+<div style="width: 100%">
+  <ng-template #linkedChecklist>
+    I am the linked checklist
+  </ng-template>
+
+  <ng-container *ngIf="!attachedChecklistId else linkedChecklist">
+    <h5>Link a checklist to this ticket</h5>
+    <div class="bam-card">
+      <form *ngIf="attachChecklistForm" [formGroup]="attachChecklistForm" (ngSubmit)="onAttachChecklist()" novalidate>
+        <!-- Workspace selection -->
+        <!-- Workspace selection -->
+        <!-- Workspace selection -->
+        <!-- Workspace selection -->
+        <div class="form-group">
+          <label for="workspace-input"
+          >Workspace
+            <ng-container *ngIf="fetchingWorkspaces"
+            >&nbsp;
+              <div class="spinner-border spinner-border-sm text-muted" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </ng-container>
+          </label>
+          <select
+            class="form-control"
+            (change)="onWorkspaceChanged()"
+            formControlName="workspace_id"
+            id="workspace-input"
+          >
+            <option selected class="font-italic" [value]="null">Choose...</option>
+            <option *ngFor="let workspace of workspaces" [value]="workspace.id">
+              {{ workspace.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Team selection -->
+        <!-- Team selection -->
+        <!-- Team selection -->
+        <!-- Team selection -->
+        <div class="form-group" [hidden]="!isFormControlDefinedForKey('workspace_id')">
+          <label for="team-input"
+          >Team
+            <ng-container *ngIf="fetchingTeams"
+            >&nbsp;
+              <div class="spinner-border spinner-border-sm text-muted" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </ng-container>
+          </label
+          >
+          <select
+            class="form-control"
+            (change)="onTeamChanged()"
+            formControlName="project_id"
+            id="team-input"
+          >
+            <option selected class="font-italic" [value]="null">Choose...</option>
+            <option *ngFor="let team of teams" [value]="team.id">
+              {{ team.name }}
+            </option>
+          </select>
+        </div>
+
+
+        <!-- Checklist selection -->
+        <!-- Checklist selection -->
+        <!-- Checklist selection -->
+        <!-- Checklist selection -->
+        <div class='form-group' [hidden]="!isFormControlDefinedForKey('project_id')">
+          <label for='checklist-input'
+          >Checklist
+            <ng-container *ngIf='fetchingChecklists'
+            >&nbsp;
+              <div class='spinner-border spinner-border-sm text-muted' role='status'>
+                <span class='sr-only'>Loading...</span>
+              </div>
+            </ng-container>
+          </label>
+          <!-- Template or running radio button -->
+          <!-- Template or running radio button -->
+          <!-- Template or running radio button -->
+          <!-- Template or running radio button -->
+          <div class='form-group'>
+            <div class='form-check form-check-inline'>
+              <input
+                class='form-check-input'
+                type='radio'
+                name='template_or_running_radio'
+                formControlName='template_or_running_radio'
+                id='templateRadio'
+                value='template'
+              />
+              <label class='form-check-label' for='templateRadio'>start new</label>
+            </div>
+            <div class='form-check form-check-inline'>
+              <input
+                class='form-check-input'
+                type='radio'
+                name='template_or_running_radio'
+                formControlName='template_or_running_radio'
+                id='runningRadio'
+                value='running'
+              />
+              <label class='form-check-label' for='runningRadio'>use existing</label>
+            </div>
+          </div>
+          <select class='form-control' formControlName='checklist_id' id='checklist-input'>
+            <option selected class='font-italic' [value]='null'>Choose...</option>
+            <option *ngFor='let checklist of checklists' [value]='checklist.id'>
+              {{ checklist.title }}
+            </option>
+          </select>
+        </div>
+
+        <button
+          class='btn btn-success'
+          type='submit'
+          mcSpinnerInside
+          [isProcessing]="attachingChecklist"
+          [disabled]='attachChecklistForm.invalid || attachingChecklist'
+        >
+          link
+        </button>
+      </form>
+    </div>
+  </ng-container>
+</div>
