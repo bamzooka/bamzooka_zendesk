@@ -37,6 +37,12 @@
           "strict": true
         }
       },
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "fr": "public/locales/connectors.fr.json"
+        }
+      },
       "root": "projects/workspace-view",
       "sourceRoot": "projects/workspace-view/src",
       "prefix": "app",
