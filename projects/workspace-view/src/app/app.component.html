@@ -65,10 +65,11 @@
     </div>
   </div>
   <ng-template #linkedChecklist>
-    I am the linked checklist
+    <iframe id="bam-iframe" *ngIf="checklistUrl" [src]="checklistUrl" style="width: 100%; height: 80vh;"
+            name="auth_frame" frameborder="0"></iframe>
   </ng-template>
 
-  <ng-container *ngIf="!attachedChecklistId else linkedChecklist">
+  <ng-container *ngIf="!checklist else linkedChecklist">
     <h5>Link a checklist to this ticket</h5>
     <div class="bam-card">
       <form *ngIf="attachChecklistForm" [formGroup]="attachChecklistForm" (ngSubmit)="onAttachChecklist()" novalidate>

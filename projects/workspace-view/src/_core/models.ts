@@ -19,7 +19,9 @@ export enum CHECKLIST_FILTER {
 export interface Checklist {
   id: number;
   title: string;
-  workspace_id: number;
+  project: {
+    workspace_id: number;
+  }
 }
 
 export interface Team {

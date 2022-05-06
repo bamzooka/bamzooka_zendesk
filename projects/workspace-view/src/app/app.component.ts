@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 import {
   BamApiService,
   Checklist,
@@ -13,6 +13,7 @@ import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/form
 import {finalize, forkJoin} from "rxjs";
 import {HttpParams} from "@angular/common/http";
 import {McFlashNoticeService, McFlashNoticeType} from "@bamzooka/ui-kit";
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
   constructor(private api: BamApiService,
               private fb: FormBuilder,
               private flashNoticeService: McFlashNoticeService,
+              private domSanitizer: DomSanitizer,
               private zendeskCommunicator: ZendeskCommunicatorService) {
     this.createForm();
   }
@@ -52,18 +54,6 @@ export class AppComponent implements OnInit {
   init(): void {
     this.attachedChecklistId = null;
     this.checklist = null;
-    //
-    // this.zendeskCommunicator.getChecklistId()
-    //   .subscribe((checklistId) => {
-    //     if (checklistId) {
-    //       this.attachedChecklistId = checklistId;
-    //       this.getChecklist(checklistId);
-    //     } else {
-    //       this.getWorkspaces();
-    //     }
-    //   })
-
-
     forkJoin(
       [
         this.zendeskCommunicator.getChecklistId(),
@@ -88,6 +78,12 @@ export class AppComponent implements OnInit {
     } else {
       return this.runningChecklists;
     }
+  }
+
+  get checklistUrl(): SafeResourceUrl {
+    console.log(this.checklist);
+    const url = `/workspaces/${this.checklist?.project?.workspace_id}/checklists/${this.checklist?.id}?embedded=true`;
+    return this.domSanitizer.bypassSecurityTrustResourceUrl(url)
   }
 
   onAttachChecklist(): void {
@@ -161,7 +157,7 @@ export class AppComponent implements OnInit {
   onOpenInAppDomain(): void {
     let url: string = '/';
     if (this.checklist) {
-      url = `/workspaces/${this.checklist.workspace_id}/checklists/${this.checklist.id}`;
+      url = `/workspaces/${this.checklist.project.workspace_id}/checklists/${this.checklist.id}`;
     }
     window.open(url, '_blank');
   }
