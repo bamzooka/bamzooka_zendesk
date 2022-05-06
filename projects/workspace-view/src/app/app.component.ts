@@ -2,14 +2,17 @@ import {Component, OnInit} from '@angular/core';
 import {
   BamApiService,
   Checklist,
-  CHECKLIST_FILTER, CHECKLIST_STATUS,
+  CHECKLIST_FILTER,
+  CHECKLIST_STATUS,
   CHECKLIST_TYPE,
   Team,
-  Workspace, ZendeskCommunicatorService,
+  Workspace,
+  ZendeskCommunicatorService,
 } from "../_core";
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {finalize, forkJoin} from "rxjs";
 import {HttpParams} from "@angular/common/http";
+import {McFlashNoticeService, McFlashNoticeType} from "@bamzooka/ui-kit";
 
 @Component({
   selector: 'app-root',
@@ -18,7 +21,8 @@ import {HttpParams} from "@angular/common/http";
 })
 export class AppComponent implements OnInit {
   attachedChecklistId: number | null = null;
-  attachChecklistForm!: FormGroup
+  attachChecklistForm!: FormGroup;
+  forceChecklistCompletion: string = 'no';
   workspaces: Workspace[] = [];
   teams: Team[] = [];
   runningChecklists: Checklist[] = [];
@@ -27,22 +31,56 @@ export class AppComponent implements OnInit {
   fetchingTeams = false;
   fetchingChecklists = false;
   attachingChecklist = false;
+  processingSettings = false;
+
+  isChangingForceChecklistCompletionState = false;
+  isUnattachingChecklist = false;
+  checklist: Checklist | null = null;
 
 
   constructor(private api: BamApiService,
               private fb: FormBuilder,
+              private flashNoticeService: McFlashNoticeService,
               private zendeskCommunicator: ZendeskCommunicatorService) {
     this.createForm();
   }
 
   ngOnInit(): void {
-    this.zendeskCommunicator.getChecklistId().subscribe((checklistId: number) => {
-      if (checklistId) {
-        this.attachedChecklistId = checklistId;
-      } else {
-        this.getWorkspaces();
-      }
-    })
+    this.init();
+  }
+
+  init(): void {
+    this.attachedChecklistId = null;
+    this.checklist = null;
+    //
+    // this.zendeskCommunicator.getChecklistId()
+    //   .subscribe((checklistId) => {
+    //     if (checklistId) {
+    //       this.attachedChecklistId = checklistId;
+    //       this.getChecklist(checklistId);
+    //     } else {
+    //       this.getWorkspaces();
+    //     }
+    //   })
+
+
+    forkJoin(
+      [
+        this.zendeskCommunicator.getChecklistId(),
+        this.zendeskCommunicator.getForceChecklistCompletion()
+      ]
+    )
+      .subscribe((checklistIdAndCompletion) => {
+        console.log('((((((((((', checklistIdAndCompletion, ')))))))')
+        const checklistId = checklistIdAndCompletion[0];
+        this.forceChecklistCompletion = checklistIdAndCompletion[1];
+        if (checklistId) {
+          this.attachedChecklistId = checklistId;
+          this.getChecklist(checklistId);
+        } else {
+          this.getWorkspaces();
+        }
+      })
   }
 
   get checklists(): Checklist[] {
@@ -109,8 +147,58 @@ export class AppComponent implements OnInit {
     return this.attachChecklistForm.get(key);
   }
 
+  onChangeForceChecklistCompletionToCloseTicketState(): void {
+    const newState = this.forceChecklistCompletion === 'yes' ? 'no' : 'yes';
+    this.isChangingForceChecklistCompletionState = true;
+    this.zendeskCommunicator.setForceChecklistCompletion(newState)
+      .pipe(
+        finalize(() => this.isChangingForceChecklistCompletionState = false)
+      )
+      .subscribe(() => {
+        this.forceChecklistCompletion = newState;
+      });
+  }
+
+  onOpenInAppDomain(): void {
+    let url: string = '/';
+    if (this.checklist) {
+      url = `/workspaces/${this.checklist.workspace_id}/checklists/${this.checklist.id}`;
+    }
+    window.open(url, '_blank');
+  }
+
+  onUnattachChecklist(): void {
+    this.isUnattachingChecklist = true;
+    this.zendeskCommunicator.setChecklistId(null)
+      .pipe(
+        finalize(() => this.isUnattachingChecklist = false)
+      )
+      .subscribe(() => {
+        this.init();
+      });
+  }
+
+  onLogout(): void {
+    this.api.logout().subscribe(() => {
+      location.reload();
+    }, (err) => {
+      this.displayError('Cannot logout');
+    })
+  }
+
+
+  private displayError(msg: string): void {
+    this.flashNoticeService.openFlashNoticeSimple(msg, McFlashNoticeType.ERROR);
+  }
+
   private attachChecklist(settings: { checklist_id: number; workspace_id: number }): void {
     this.attachingChecklist = true;
+    // forkJoin(
+    //   [
+    //     this.zendeskCommunicator.setChecklistId(settings.checklist_id),
+    //     this.zendeskCommunicator.setForceChecklistCompletion(true)
+    //   ]
+    // )
     this.zendeskCommunicator.setChecklistId(settings.checklist_id)
       .pipe(
         finalize(() => {
@@ -193,6 +281,16 @@ export class AppComponent implements OnInit {
         (runningAndTemplateChecklists) => {
           this.runningChecklists = runningAndTemplateChecklists[0];
           this.templateChecklists = runningAndTemplateChecklists[1];
+        }
+      );
+  }
+
+  private getChecklist(checklistId: number): void {
+    this.api
+      .getChecklist(checklistId)
+      .subscribe(
+        (checklist: Checklist) => {
+          this.checklist = checklist;
         }
       );
   }

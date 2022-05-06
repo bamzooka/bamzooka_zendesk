@@ -1,4 +1,69 @@
 <div style="width: 100%">
+  <div
+    class="actions d-flex flex-wrap align-items-center justify-content-end mb-2"
+    [hidden]="processingSettings"
+  >
+    <div class="custom-control custom-checkbox mr-auto" *ngIf="attachedChecklistId">
+      <input
+        id="force-checklist-completion-checkbox"
+        [ngModel]="forceChecklistCompletion === 'yes'"
+        type="checkbox"
+        [disabled]="isChangingForceChecklistCompletionState"
+        (change)="onChangeForceChecklistCompletionToCloseTicketState()"
+        class="custom-control-input"
+      />
+      <label class="custom-control-label text-muted" for="force-checklist-completion-checkbox"
+      >Prevent close/solve</label
+      >
+      &nbsp;<span
+      [ngbTooltip]="
+        'When checked, agents won\'t be able to solve or close this ticket until the checklist is completed'
+      "
+    >
+      <mc-icon [name]="'question-circle'"></mc-icon>
+    </span>
+    </div>
+
+    <button
+      class="btn btn-default mr-1"
+      ngbTooltip="Open in Bamzooka"
+      (click)="onOpenInAppDomain()"
+    >
+      <mc-icon [name]="'box-arrow-up-right'"></mc-icon>
+    </button>
+
+    <!--  More action dropdown-->
+    <!--  More action dropdown-->
+    <!--  More action dropdown-->
+    <!--  More action dropdown-->
+    <div ngbDropdown>
+      <button class="btn btn-default dropdown-without-toggle" id="actions-dropdown" ngbDropdownToggle>
+        <mc-icon [name]="'three-dots-vertical'"></mc-icon>
+      </button>
+      <div ngbDropdownMenu class="dropdown-menu-right" aria-labelledby="actions-dropdown">
+        <button
+          class="dropdown-item"
+          *ngIf="checklist"
+          [class.disabled]="isUnattachingChecklist"
+          [disabled]="isUnattachingChecklist"
+          (click)="onUnattachChecklist()"
+        >
+          <ng-template #spinner>
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </ng-template>
+          <span *ngIf="!isUnattachingChecklist; else spinner">
+          <mc-icon [name]="'unlock'"></mc-icon>&nbsp;unlink checklist
+        </span>
+        </button>
+
+        <button class="btn dropdown-item" (click)="onLogout()">
+          <mc-icon [name]="'box-arrow-right'"></mc-icon>&nbsp;logout
+        </button>
+      </div>
+    </div>
+  </div>
   <ng-template #linkedChecklist>
     I am the linked checklist
   </ng-template>
