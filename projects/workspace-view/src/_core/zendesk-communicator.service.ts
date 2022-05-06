@@ -40,7 +40,7 @@ export class ZendeskCommunicatorService implements OnDestroy {
           const response: ChecklistDataResponseMessage = {
             id: messageId,
             event_type: "bam_get_checklist_data_response",
-            checklist_data: JSON.stringify(checklist)
+            checklist_data: checklist
           };
           parent.postMessage(response, PARENT_ORIGIN);
         });
@@ -124,7 +124,6 @@ export class ZendeskCommunicatorService implements OnDestroy {
         event_type: 'bam_ticket_storage_get_force_checklist_completion'
       }
       const fn = (event: MessageEvent) => {
-        console.log('++++++=', event);
         const messageResponse: ForceChecklistCompletionMessage = JSON.parse(event.data);
         if (+messageResponse.id === +messageId) {
           if (messageResponse.event_type === 'bam_ticket_storage_get_force_checklist_completion_response') {

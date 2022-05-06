@@ -71,7 +71,6 @@ export class AppComponent implements OnInit {
       ]
     )
       .subscribe((checklistIdAndCompletion) => {
-        console.log('((((((((((', checklistIdAndCompletion, ')))))))')
         const checklistId = checklistIdAndCompletion[0];
         this.forceChecklistCompletion = checklistIdAndCompletion[1];
         if (checklistId) {

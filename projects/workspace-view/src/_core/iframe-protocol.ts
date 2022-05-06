@@ -1,3 +1,5 @@
+import {Checklist} from "./models";
+
 export type IFrameMessageType = 'bam_ticket_storage_set_checklist_id'
   | 'bam_ticket_storage_set_checklist_id_response'
   | 'bam_ticket_storage_get_checklist_id'
@@ -36,6 +38,6 @@ export interface GetChecklistDataMessage extends IFrameProtocolMessage {
 }
 
 export interface ChecklistDataResponseMessage extends IFrameProtocolMessage {
-  checklist_data: string;
+  checklist_data: Checklist;
   event_type: 'bam_get_checklist_data_response';
 }
