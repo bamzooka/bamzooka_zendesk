@@ -1,4 +1,4 @@
-import {Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   BamApiService,
   Checklist,
@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
   fetchingChecklists = false;
   attachingChecklist = false;
   processingSettings = false;
+  checklistUrl: SafeResourceUrl | null = null;
 
   isChangingForceChecklistCompletionState = false;
   isUnattachingChecklist = false;
@@ -54,6 +55,7 @@ export class AppComponent implements OnInit {
   init(): void {
     this.attachedChecklistId = null;
     this.checklist = null;
+    this.setChecklistUrl(null);
     forkJoin(
       [
         this.zendeskCommunicator.getChecklistId(),
@@ -80,10 +82,13 @@ export class AppComponent implements OnInit {
     }
   }
 
-  get checklistUrl(): SafeResourceUrl {
-    console.log(this.checklist);
+  setChecklistUrl(checklist: Checklist | null): void {
     const url = `/workspaces/${this.checklist?.project?.workspace_id}/checklists/${this.checklist?.id}?embedded=true`;
-    return this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+    if (checklist) {
+      this.checklistUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+    } else {
+      this.checklistUrl = null;
+    }
   }
 
   onAttachChecklist(): void {
@@ -286,6 +291,7 @@ export class AppComponent implements OnInit {
       .subscribe(
         (checklist: Checklist) => {
           this.checklist = checklist;
+          this.setChecklistUrl(checklist);
         }
       );
   }

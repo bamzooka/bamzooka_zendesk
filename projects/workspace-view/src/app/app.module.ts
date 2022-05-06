@@ -38,7 +38,7 @@ import {
 export class AppModule {
   constructor(injector: Injector) {
     const element = createCustomElement(AppComponent, {injector});
-    customElements.define('bamzooka-zendesk-workspace-view', element);
+    customElements.define('bamzooka-zendesk-standalone-view', element);
   }
 
   ngDoBootstrap() {
