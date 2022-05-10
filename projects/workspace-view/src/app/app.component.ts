@@ -5,7 +5,7 @@ import {
   CHECKLIST_FILTER,
   CHECKLIST_STATUS,
   CHECKLIST_TYPE,
-  Team,
+  Team, UI_BASE_URL,
   Workspace,
   ZendeskCommunicatorService,
 } from "../_core";
@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
   }
 
   setChecklistUrl(checklist: Checklist | null): void {
-    const url = `/workspaces/${this.checklist?.project?.workspace_id}/checklists/${this.checklist?.id}?embedded=true`;
+    const url = `${UI_BASE_URL}/workspaces/${this.checklist?.project?.workspace_id}/checklists/${this.checklist?.id}?embedded=true`;
     if (checklist) {
       this.checklistUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
     } else {
@@ -201,7 +201,7 @@ export class AppComponent implements OnInit {
   onOpenInAppDomain(): void {
     let url: string = '/';
     if (this.checklist) {
-      url = `/workspaces/${this.checklist.project.workspace_id}/checklists/${this.checklist.id}`;
+      url = `${UI_BASE_URL}/workspaces/${this.checklist.project.workspace_id}/checklists/${this.checklist.id}`;
     }
     window.open(url, '_blank');
   }
