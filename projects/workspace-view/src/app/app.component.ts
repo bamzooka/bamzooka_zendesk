@@ -230,6 +230,7 @@ export class AppComponent implements OnInit {
       )
       .subscribe(() => {
         this.attachedChecklistId = settings.checklist_id;
+        this.getChecklist(this.attachedChecklistId);
       })
   }
 

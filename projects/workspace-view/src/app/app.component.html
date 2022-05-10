@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div
-    class="actions d-flex flex-wrap align-items-center justify-content-end mb-2"
+    class="actions d-flex flex-wrap align-items-center justify-content-end mb-2 mt-2"
     [hidden]="processingSettings"
   >
     <div class="custom-control custom-checkbox mr-auto" *ngIf="attachedChecklistId">
@@ -25,7 +25,7 @@
     </div>
 
     <button
-      class="btn btn-default mr-1"
+      class="btn btn-sm btn-default mr-1"
       ngbTooltip="Open in Bamzooka"
       (click)="onOpenInAppDomain()"
     >
@@ -37,7 +37,7 @@
     <!--  More action dropdown-->
     <!--  More action dropdown-->
     <div ngbDropdown>
-      <button class="btn btn-default dropdown-without-toggle" id="actions-dropdown" ngbDropdownToggle>
+      <button class="btn btn-sm btn-default dropdown-without-toggle" id="actions-dropdown" ngbDropdownToggle>
         <mc-icon [name]="'three-dots-vertical'"></mc-icon>
       </button>
       <div ngbDropdownMenu class="dropdown-menu-right" aria-labelledby="actions-dropdown">
