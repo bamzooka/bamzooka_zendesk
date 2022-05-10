@@ -10,7 +10,7 @@ import {
   ZendeskCommunicatorService,
 } from "../_core";
 import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {finalize, forkJoin} from "rxjs";
+import {finalize, forkJoin, map, switchMap} from "rxjs";
 import {HttpParams} from "@angular/common/http";
 import {McFlashNoticeService, McFlashNoticeType} from "@bamzooka/ui-kit";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
@@ -119,7 +119,7 @@ export class AppComponent implements OnInit {
     switch (templateOrRunningRadio) {
       // open run checklist dialog
       case 'template':
-        // this.openRunChecklistDialog();
+        this.onRunNew(this.getChecklistIdFromForm());
         break;
       // attach checklist right away
       case 'running':
@@ -129,6 +129,22 @@ export class AppComponent implements OnInit {
         });
         break;
     }
+  }
+
+  onRunNew(checklistId: number): void {
+    this.attachingChecklist = true;
+    this.api.runChecklist(checklistId).pipe(
+      switchMap((checklist) => {
+        return this.zendeskCommunicator.setChecklistId(checklist.id).pipe(
+          map(() => checklist)
+        );
+      }),
+      finalize(() => this.attachingChecklist = false)
+    ).subscribe(checklist => {
+      this.attachedChecklistId = checklist.id;
+      this.getChecklist(checklist.id);
+    })
+
   }
 
 
@@ -216,12 +232,6 @@ export class AppComponent implements OnInit {
 
   private attachChecklist(settings: { checklist_id: number; workspace_id: number }): void {
     this.attachingChecklist = true;
-    // forkJoin(
-    //   [
-    //     this.zendeskCommunicator.setChecklistId(settings.checklist_id),
-    //     this.zendeskCommunicator.setForceChecklistCompletion(true)
-    //   ]
-    // )
     this.zendeskCommunicator.setChecklistId(settings.checklist_id)
       .pipe(
         finalize(() => {

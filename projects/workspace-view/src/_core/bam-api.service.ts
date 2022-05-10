@@ -17,6 +17,11 @@ export class BamApiService {
     return this.http.get<Checklist>(url);
   }
 
+  runChecklist(id: number): Observable<Checklist> {
+    const url = `${this.baseUrl}/checklists/${id}/run`;
+    return this.http.post<Checklist>(url, {});
+  }
+
   getMyTeams(workspaceId: number): Observable<Team[]> {
     const url = `${this.baseUrl}/workspaces/${workspaceId}/all_my_teams`;
     return this.http.get<Team[]>(url);
