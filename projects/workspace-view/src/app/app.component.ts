@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, Renderer2} from '@angular/core';
 import {
   BamApiService,
   Checklist,
@@ -44,12 +44,35 @@ export class AppComponent implements OnInit {
               private fb: FormBuilder,
               private flashNoticeService: McFlashNoticeService,
               private domSanitizer: DomSanitizer,
+              private renderer: Renderer2,
+              private cdr: ChangeDetectorRef,
               private zendeskCommunicator: ZendeskCommunicatorService) {
     this.createForm();
   }
 
   ngOnInit(): void {
     this.init();
+    this.renderer.listen('window', 'resize', (event) => {
+      this.resizeIframe();
+    });
+  }
+
+  resizeIframe(): void {
+    this.cdr.detectChanges();
+    if (this.checklist) {
+      const iframe = this.renderer.selectRootElement('#bam-iframe');
+      if (iframe) {
+        this.renderer.listen(iframe, 'load', () => {
+          setTimeout(() => {
+            const iframeBody = iframe.contentWindow.document.body;
+            this.renderer.setStyle(iframe, 'height', (+iframeBody.scrollHeight + 20) + 'px');
+            this.renderer.setStyle(iframe, 'width', (+iframeBody.scrollWidth + 20) + 'px');
+            this.renderer.setStyle(iframeBody, 'overflow', 'hidden');
+            this.cdr.detectChanges();
+          }, 2000);
+        });
+      }
+    }
   }
 
   init(): void {
@@ -71,7 +94,7 @@ export class AppComponent implements OnInit {
         } else {
           this.getWorkspaces();
         }
-      })
+      });
   }
 
   get checklists(): Checklist[] {
@@ -292,6 +315,7 @@ export class AppComponent implements OnInit {
         (checklist: Checklist) => {
           this.checklist = checklist;
           this.setChecklistUrl(checklist);
+          this.resizeIframe();
         }
       );
   }

@@ -65,7 +65,8 @@
     </div>
   </div>
   <ng-template #linkedChecklist>
-    <iframe id="bam-iframe" *ngIf="checklistUrl" [src]="checklistUrl" style="width: 100%; height: calc(100vh - 40px)"
+    <iframe id="bam-iframe" *ngIf="checklistUrl" [src]="checklistUrl"
+            style="min-height: 650px;"
             name="auth_frame" frameborder="0"></iframe>
   </ng-template>
 
