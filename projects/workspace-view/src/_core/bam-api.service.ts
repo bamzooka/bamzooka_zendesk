@@ -45,7 +45,7 @@ export class BamApiService {
 
   logout(): Observable<unknown> {
     const url = `${this.API_DOMAIN}/auth/logout`;
-    return this.http.get<unknown>(url);
+    return this.http.delete<unknown>(url);
   }
 
 
